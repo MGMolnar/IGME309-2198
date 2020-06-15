@@ -261,6 +261,10 @@ void MyMesh::GenerateCuboid(vector3 a_v3Dimensions, vector3 a_v3Color)
 }
 void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
+	float twoPI = PI * 2;
+	std::vector<vector3> vertexList;
+
+
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -275,9 +279,37 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+
+	//center point
+	vertexList.push_back(vector3(0.0f, 0.0f, (a_fHeight / 2)));
+
+	//for loop that calculates where all the vertexs will be
+	for (int i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		vertexList.push_back(vector3((a_fRadius * cos(i * twoPI / a_nSubdivisions)), (a_fRadius * sin(i * twoPI / a_nSubdivisions)), (-a_fHeight / 2)));
+	}
+
+	//for loop to add all the sub divisions into triangles
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertexList[0], vertexList[i + 1], vertexList[i + 2]);
+	}
+
+	//for loop that will flip all the points in the y direction to show the circle
+	for (int i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		vertexList[i].y *= -1;
+	}
+
+	//move the center point to be in the center of the base
+	vertexList[0] = (vector3(0.0f, 0.0f, (-a_fHeight / 2)));
+	
+	//for loop to add all the sub divisions into triangles
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertexList[0], vertexList[i + 1], vertexList[i + 2]);
+	} 
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -285,6 +317,12 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 }
 void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
+	//double pi
+	float twoPI = PI * 2;
+
+	//vertex list
+	std::vector<vector3> vertexList;
+
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -299,9 +337,55 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//center point
+	vertexList.push_back(vector3(0.0f, 0.0f, (a_fHeight / 2)));
+
+	//for loop that calculates where all the vertexs will be
+	for (int i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		vertexList.push_back(vector3((a_fRadius * cos(i * twoPI / a_nSubdivisions)), (a_fRadius * sin(i * twoPI / a_nSubdivisions)), (a_fHeight/ 2)));
+	}
+
+	//for loop to add all the sub divisions into triangles
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertexList[0], vertexList[i + 1], vertexList[i + 2]);
+	}
+
+	vertexList.clear();
+
+	//center point
+	vertexList.push_back(vector3(0.0f, 0.0f, (-a_fHeight / 2)));
+
+	//for loop that calculates where all the vertexs will be
+	for (int i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		vertexList.push_back(vector3((a_fRadius * cos(i * twoPI / a_nSubdivisions)), (a_fRadius * sin(i * twoPI / a_nSubdivisions)), (-a_fHeight / 2)));
+	}
+
+	//for loop to add all the sub divisions into triangles
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertexList[0], vertexList[i + 2], vertexList[i + 1]);
+	}
+	vertexList.clear();
+
+	//for loop to create the two vertical verticies one for at the top and one at the bottom
+	for (int i = 0; i < (a_nSubdivisions * 2) + 2; i++)
+	{
+		vertexList.push_back(vector3((a_fRadius * cos(i * twoPI / a_nSubdivisions)), (a_fRadius * sin(i * twoPI / a_nSubdivisions)), (a_fHeight / 2)));
+		vertexList.push_back(vector3((a_fRadius * cos(i * twoPI / a_nSubdivisions)), (a_fRadius * sin(i * twoPI / a_nSubdivisions)), (-a_fHeight / 2)));
+	}
+
+	//3--2
+	//|  |
+	//0--1
+
+	//adds the quads to create the cylinder
+	for (int i = 0; i < (a_nSubdivisions * 2) + 2; i++)
+	{
+		AddQuad(vertexList[i], vertexList[i + 1], vertexList[i + 2], vertexList[i + 3]);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -309,6 +393,12 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 }
 void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
+	//double pi
+	float twoPI = PI * 2;
+
+	//vertex list
+	std::vector<vector3> vertexList;
+
 	if (a_fOuterRadius < 0.01f)
 		a_fOuterRadius = 0.01f;
 
@@ -319,26 +409,92 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 		std::swap(a_fInnerRadius, a_fOuterRadius);
 
 	if (a_fHeight < 0.01f)
-		a_fHeight = 0.01f;
 
 	if (a_nSubdivisions < 3)
 		a_nSubdivisions = 3;
 	if (a_nSubdivisions > 360)
 		a_nSubdivisions = 360;
 
+
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//for loop that calculates where all the verteices for the top of the tube
+	for (int i = 0; i < a_nSubdivisions * 2; i++)
+	{
+		vertexList.push_back(vector3((a_fInnerRadius * cos(i * twoPI / a_nSubdivisions)), (a_fInnerRadius * sin(i * twoPI / a_nSubdivisions)), (a_fHeight / 2)));
+		vertexList.push_back(vector3((a_fOuterRadius * cos(i * twoPI / a_nSubdivisions)), (a_fOuterRadius * sin(i * twoPI / a_nSubdivisions)), (a_fHeight / 2)));
+	}
 
-	// Adding information about color
+	//for loop to add all the vertices for the top of the tube
+	for (int i = 0; i < a_nSubdivisions * 2; i++)
+	{
+		AddQuad(vertexList[i], vertexList[i + 1], vertexList[i + 2], vertexList[i + 3]);
+	}
+
+	vertexList.clear();
+
+	//for loop that will create the verticies for the bottom of the tube
+	for (int i = 0; i < a_nSubdivisions * 2; i++)
+	{
+		vertexList.push_back(vector3((a_fInnerRadius * cos(i * twoPI / a_nSubdivisions)), (a_fInnerRadius * sin(i * twoPI / a_nSubdivisions)), (-a_fHeight / 2)));
+		vertexList.push_back(vector3((a_fOuterRadius * cos(i * twoPI / a_nSubdivisions)), (a_fOuterRadius * sin(i * twoPI / a_nSubdivisions)), (-a_fHeight / 2)));
+	}
+
+	//for loop to add all the inner tube vertices
+	for (int i = 0; i < a_nSubdivisions * 2; i++)
+	{
+		AddQuad(vertexList[i], vertexList[i + 1], vertexList[i + 2], vertexList[i + 3]);
+	}
+
+	vertexList.clear();
+
+	//for loop to create the two vertical verticies for the otuer wall
+	for (int i = 0; i < (a_nSubdivisions * 2) + 2; i++)
+	{
+		vertexList.push_back(vector3((a_fOuterRadius * cos(i * twoPI / a_nSubdivisions)), (a_fOuterRadius * sin(i * twoPI / a_nSubdivisions)), (a_fHeight / 2)));
+		vertexList.push_back(vector3((a_fOuterRadius * cos(i * twoPI / a_nSubdivisions)), (a_fOuterRadius * sin(i * twoPI / a_nSubdivisions)), (-a_fHeight / 2)));
+	}
+
+	//adds the quads to create the outer cylinder
+	for (int i = 0; i < (a_nSubdivisions * 2) + 2; i++)
+	{
+		AddQuad(vertexList[i], vertexList[i + 1], vertexList[i + 2], vertexList[i + 3]);
+	}
+
+
+	vertexList.clear();
+
+	//for loop to create the vertices for the inner radius
+	for (int i = 0; i < (a_nSubdivisions * 2) + 2; i++)
+	{
+		vertexList.push_back(vector3((a_fInnerRadius * cos(i * twoPI / a_nSubdivisions)), (a_fInnerRadius * sin(i * twoPI / a_nSubdivisions)), (a_fHeight / 2)));
+		vertexList.push_back(vector3((a_fInnerRadius * cos(i * twoPI / a_nSubdivisions)), (a_fInnerRadius * sin(i * twoPI / a_nSubdivisions)), (-a_fHeight / 2)));
+	}
+
+	//adds the quads to create the inner cylinder
+	for (int i = 0; i < (a_nSubdivisions * 2) + 2; i++)
+	{
+		AddQuad(vertexList[i], vertexList[i + 1], vertexList[i + 2], vertexList[i + 3]);
+	}
+
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
 void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSubdivisionsA, int a_nSubdivisionsB, vector3 a_v3Color)
 {
+	//double pi
+	float twoPI = PI * 2;
+
+	//angle from top to bottom on the object
+	float yAngle = 0.0f;
+
+	//angle from left to right on the object.
+	float xAngle = 0.0f;
+
+	//vertex list
+	std::vector<vector3> vertexList;
+
 	if (a_fOuterRadius < 0.01f)
 		a_fOuterRadius = 0.01f;
 
@@ -360,17 +516,49 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 	Release();
 	Init();
+	
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//this is a nested for loop first to calculate the torus
+	//first for loop is to calculate from top to bottom the angle that the vertices will be placed on
+	//the second for loop will calculate where teh vertices go in the x direction and will also account for
+	//the middle of the torus as well.
+	for (int i = 0; i <= a_nSubdivisionsB * 3; i++)
+	{
+		yAngle = (PI / 2) - PI * (i / (float)a_nSubdivisionsB);
+
+		for (int j = 0; j <= a_nSubdivisionsA; j++)
+		{
+			xAngle = twoPI * (j / (float)a_nSubdivisionsA);
+
+			vertexList.push_back(vector3((a_fOuterRadius + (a_fInnerRadius * cos(yAngle))) * cos(xAngle), (a_fOuterRadius + (a_fInnerRadius * cos(yAngle))) * sin(xAngle), a_fInnerRadius * sin(yAngle)));
+		}
+	}
+
+	//this will add the vertices and add them into a square before sending them to be drawn
+	for (size_t i = 0; i <= ((a_nSubdivisionsB * 3) * a_nSubdivisionsA); i++)
+	{
+		AddQuad(vertexList[i + 1], vertexList[i], vertexList[(i + a_nSubdivisionsA) + 1], vertexList[(i + a_nSubdivisionsA)]);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
-void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
-{
+void MyMesh::GenerateSphere(float a_fRadius, float a_nSubdivisions, vector3 a_v3Color)
+{	
+	//double pi
+	float twoPI = PI * 2;
+	
+	//angle from top to bottom on the object
+	float yAngle = 0.0f;
+
+	//angle from left to right on the object.
+	float xAngle = 0.0f;
+
+	//vertex list
+	std::vector<vector3> vertexList;
+
+
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -386,9 +574,26 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//this is a nested for loop first to calculate how how far down on the circle
+	//the vertexes have to go then the second for loop will calculate where the vertices go in the x direction
+	//or around the circle on that y level.
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		yAngle = (PI / 2) - PI * (i / a_nSubdivisions);
+
+		for (int j = 0; j <= a_nSubdivisions; j++)
+		{
+			xAngle = twoPI * (j / a_nSubdivisions);
+
+			vertexList.push_back(vector3(((a_fRadius * cos(yAngle)) * cos(xAngle)), ((a_fRadius * cos(yAngle)) * sin(xAngle)), a_fRadius * sin(yAngle)));
+		}
+	}
+
+	//this will add the vertices and add them into a square before sending them to be drawn
+	for (size_t i = 0; i <= (a_nSubdivisions * a_nSubdivisions) + 4; i++)
+	{
+		AddQuad(vertexList[i + 1], vertexList[i], vertexList[(i + a_nSubdivisions) + 1], vertexList[(i + a_nSubdivisions)]);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
