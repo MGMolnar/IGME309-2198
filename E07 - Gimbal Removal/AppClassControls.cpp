@@ -311,23 +311,23 @@ void Application::ArcBall(float a_fSensitivity)
 	if (MouseX < CenterX)
 	{
 		DeltaMouse = static_cast<float>(CenterX - MouseX);
-		m_qArcBall = quaternion(vector3(0.0f, glm::radians(a_fSensitivity * DeltaMouse), 0.0f)) * m_qArcBall;
+		m_qArcBall = quaternion(vector3(0.0f, glm::radians(a_fSensitivity * DeltaMouse * .001f), 0.0f)) * m_qArcBall;
 	}
 	else if (MouseX > CenterX)
 	{
 		DeltaMouse = static_cast<float>(MouseX - CenterX);
-		m_qArcBall = quaternion(vector3(0.0f, glm::radians(-a_fSensitivity * DeltaMouse), 0.0f)) * m_qArcBall;
+		m_qArcBall = quaternion(vector3(0.0f, glm::radians(-a_fSensitivity * DeltaMouse * .001f), 0.0f)) * m_qArcBall;
 	}
 
 	if (MouseY < CenterY)
 	{
 		DeltaMouse = static_cast<float>(CenterY - MouseY);
-		m_qArcBall = quaternion(vector3(glm::radians(-a_fSensitivity * DeltaMouse), 0.0f, 0.0f)) * m_qArcBall;
+		m_qArcBall = quaternion(vector3(glm::radians(-a_fSensitivity * DeltaMouse * .001f), 0.0f, 0.0f)) * m_qArcBall;
 	}
 	else if (MouseY > CenterY)
 	{
 		DeltaMouse = static_cast<float>(MouseY - CenterY);
-		m_qArcBall = quaternion(vector3(glm::radians(a_fSensitivity * DeltaMouse), 0.0f, 0.0f)) * m_qArcBall;
+		m_qArcBall = quaternion(vector3(glm::radians(a_fSensitivity * DeltaMouse * .001f), 0.0f, 0.0f)) * m_qArcBall;
 	}
 
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
@@ -416,28 +416,47 @@ void Application::ProcessKeyboard(void)
 #pragma endregion
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
 	{
-		if (fMultiplier)
+		/*if (fMultiplier)
 			m_v3Rotation.x -= 1.0f;
 		else
 			m_v3Rotation.x += 1.0f;
+
+		*/
+
+		m_v3Rotation.x++;
+		quaternion q1 = glm::angleAxis(glm::radians(1.0f), vector3(1.0f, 0.0f, 0.0f));
+		m_qOrientation = m_qOrientation * q1;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 	{
-		if (fMultiplier)
+		/*if (fMultiplier)
 			m_v3Rotation.y -= 1.0f;
 		else
 			m_v3Rotation.y += 1.0f;
+		*/
+
+		m_v3Rotation.y++;
+		quaternion q1 = glm::angleAxis(glm::radians(1.0f), vector3(0.0f, 1.0f, 0.0f));
+		m_qOrientation = m_qOrientation * q1;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
-		if (fMultiplier)
+		/*if (fMultiplier)
 			m_v3Rotation.z -= 1.0f;
 		else
 			m_v3Rotation.z += 1.0f;
+		*/
+
+		m_v3Rotation.z++;
+		quaternion q1 = glm::angleAxis(glm::radians(1.0f), vector3(0.0f, 0.0f, 1.0f));
+		m_qOrientation = m_qOrientation * q1;
+
 	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
 		m_v3Rotation = vector3(0.0f);
+		m_qOrientation = vector3(0.0f);
 	}
 }
 //Joystick

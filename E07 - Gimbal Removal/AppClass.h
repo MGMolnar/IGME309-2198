@@ -15,6 +15,9 @@ Date: 2017/05
 class Application
 {
 	matrix4 m_m4Model = IDENTITY_M4;
+	matrix4 m_m4ModelX = IDENTITY_M4;
+	matrix4 m_m4ModelY = IDENTITY_M4;
+	matrix4 m_m4ModelZ = IDENTITY_M4;
 	quaternion m_qOrientation;
 	vector3 m_v3Rotation;
 	MyMesh* m_pMesh = nullptr;
@@ -25,6 +28,7 @@ private:
 
 	uint m_uRenderCallCount = 0; //count of render calls per frame
 	uint m_uControllerCount = 0; //count of controllers connected
+
 
 	vector3 m_v3Mouse = vector3(); //position of the mouse in the window
 	bool m_bFPC = false;// First Person Camera flag
