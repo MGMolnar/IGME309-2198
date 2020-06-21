@@ -450,6 +450,41 @@ void Application::ProcessKeyboard(void)
 		//vector3 v3Temp(glm::radians(m_v3Orientation.x), glm::radians(m_v3Orientation.y), glm::radians(m_v3Orientation.z));
 		//m_qOrientation = quaternion(vector3(v3Temp));
 	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+	{
+
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+	{
+
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+	{
+
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+	{
+
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
+	{
+
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6))
+	{
+
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7))
+	{
+
+	}
 }
 //Joystick
 void Application::ProcessJoystick(void)

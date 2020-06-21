@@ -47,10 +47,10 @@ void Application::Display(void)
 	//draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 
-	static float fPos = 0.0f;
-	m_pCamera->SetPosition(vector3(fPos, 0.0f, 10.0f));
-	m_pCamera->SetTarget(vector3(fPos, 0.0f, 9.0f));
-	fPos -= 0.01f;
+	//static float fPos = 0.0f;
+	//m_pCamera->SetPosition(vector3(fPos, 0.0f, 10.0f));
+	//m_pCamera->SetTarget(vector3(fPos, 0.0f, 9.0f));
+	//fPos -= 0.01f;
 
 	//draw the primitive
 	//m_pMesh->Render(m_pCamera->GetProjectionMatrix(), m_pCamera->GetViewMatrix(), ToMatrix4(m_qArcBall));
