@@ -202,7 +202,6 @@ void MyCamera::MoveSideways(float a_fDistance)
 //Also a method that will move the above point with the camera position
 void Simplex::MyCamera::CalculateRotation(quaternion rotation)
 {
-	std::cout << "m_Target: (" << m_v3Target.x << ", " << m_v3Target.y << ", " << m_v3Target.z << ")" << std::endl;
 
 	//applies the rotation to the target point
 	m_v3Target = m_v3Target * rotation;
