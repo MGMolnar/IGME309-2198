@@ -30,6 +30,8 @@ private:
 	bool m_bArcBall = false;// Arcball flag
 	quaternion m_qArcBall; //ArcBall quaternion
 
+	quaternion cameraRotation; //a quaternion that will turn the camera
+
 	vector4 m_v4ClearColor; //Color of the scene
 	bool m_bRunning = false; //Is app running?
 

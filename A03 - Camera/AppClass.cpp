@@ -39,6 +39,8 @@ void Application::Update(void)
 			m_pMyMeshMngr->AddConeToRenderList(glm::translate(vector3(i, 0.0f, j)));
 		}
 	}
+	
+
 }
 void Application::Display(void)
 {
