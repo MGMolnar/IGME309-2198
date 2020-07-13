@@ -281,9 +281,12 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
+	//floats that will hold the projects of each
+	//object onto the axis
 	float projection;
 	float otherProjection;
 	
+	//holds to rotations of the objects
 	matrix4 rotation;
 	matrix4 absRotation;
 	
