@@ -333,7 +333,7 @@ void Application::CameraRotation(float a_fSpeed)
 	UINT	MouseX, MouseY;		// Coordinates for the mouse
 	UINT	CenterX, CenterY;	// Coordinates for the center of the screen.
 
-								//Initialize the position of the pointer to the middle of the screen
+	//Initialize the position of the pointer to the middle of the screen
 	CenterX = m_pSystem->GetWindowX() + m_pSystem->GetWindowWidth() / 2;
 	CenterY = m_pSystem->GetWindowY() + m_pSystem->GetWindowHeight() / 2;
 
@@ -351,23 +351,69 @@ void Application::CameraRotation(float a_fSpeed)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
+
+		//calculates the angle for the quaternion in the y direction which is then sent to a method
+		//in the camera class that will apply the quaternion 
+		cameraRotation = glm::angleAxis(-fAngleY, vector3(0.0f, 1.0f, 0.0f));
+		m_pCamera->CalculateRotation(cameraRotation);
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleY -= fDeltaMouse * a_fSpeed;
+
+		//calculates the angle for the quaternion in the y direction which is then sent to a method
+		//in the camera class that will apply the quaternion 
+		cameraRotation = glm::angleAxis(-fAngleY, vector3(0.0f, 1.0f, 0.0f));
+		m_pCamera->CalculateRotation(cameraRotation);
+
 	}
 
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
 		fAngleX -= fDeltaMouse * a_fSpeed;
+
+		//if statement to try and keep the x angle in between 80 degrees so it 
+		//doesn't create a gimble lock
+		if (fAngleX > 80.0f)
+		{
+			fAngleX = 80.0f;
+		}
+		else if (fAngleX < -80.0f)
+		{
+			fAngleX = -80.0f;
+		}
+
+		//calculates the angle for the quaternion in the x direction which is then sent to a method
+		//in the camera class that will apply the quaternion 
+		cameraRotation = glm::angleAxis(fAngleX, vector3(1.0f, 0.0f, 0.0f));
+		m_pCamera->CalculateRotation(cameraRotation);
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
-		fAngleX += fDeltaMouse * a_fSpeed;
+		fAngleX += fDeltaMouse * a_fSpeed;	
+
+		//if statement to try and keep the x angle in between 80 degrees so it 
+		//doesn't create a gimble lock
+		if (fAngleX > 80.0f)
+		{
+			fAngleX = 80.0f;
+		}
+		else if (fAngleX < -80.0f)
+		{
+			fAngleX = -80.0f;
+		}
+
+		//calculates the angle for the quaternion in the x direction which is then sent to a method
+		//in the camera class that will apply the quaternion 
+		cameraRotation = glm::angleAxis(fAngleX, vector3(1.0f, 0.0f, 0.0f));
+		m_pCamera->CalculateRotation(cameraRotation);
+
 	}
+
+
 	//Change the Yaw and the Pitch of the camera
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
@@ -390,6 +436,14 @@ void Application::ProcessKeyboard(void)
 		m_pCamera->MoveForward(fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_pCamera->MoveSideways(-fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_pCamera->MoveSideways(fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		m_pCamera->MoveVertical(fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		m_pCamera->MoveVertical(-fSpeed);
 #pragma endregion
 }
 //Joystick

@@ -151,13 +151,66 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
+//Method that will take a float value and use it to move the camera forward or backward
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	//takes the forward vector and normalizes it
+	vector3 forward = m_v3Target - m_v3Position;
+	forward = glm::normalize(forward);
+
+	//adds the movement vector multiplied by the forward vector to the position the target and the above.
+	m_v3Position += a_fDistance * forward;
+	m_v3Target += a_fDistance * forward;
+	m_v3Above += a_fDistance * forward;
+
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+//Method that will take a float value and use it to move the camera forward or backward
+void MyCamera::MoveVertical(float a_fDistance)
+{
+	//will calculate the upward vector and normalize it
+	vector3 upward = m_v3Above - m_v3Position;
+	upward = glm::normalize(upward);
+	
+	//Multiply the upward vector by the new movement vector and add that to the position target and above vectors
+	m_v3Position += upward * a_fDistance;
+	m_v3Target += upward * a_fDistance;
+	m_v3Above += upward * a_fDistance;
+
+
+}
+
+//Method that will take a float and use it to make the camera move left or right
+void MyCamera::MoveSideways(float a_fDistance)
+{
+	//calculates the upward and forward vectors
+	//Then takes the crossproduct of them to get the right vector
+	//The right vector then is normalized 
+	vector3 upward = m_v3Above - m_v3Position;
+	vector3 forward = m_v3Target - m_v3Position;
+	vector3 rightward = glm::cross(upward, forward);
+	rightward = glm::normalize(rightward);
+
+	//multiply the rightward vector by the movement vector then add that to the position target and above vectors.
+	m_v3Position += a_fDistance * rightward;
+	m_v3Target += a_fDistance * rightward;
+	m_v3Above += a_fDistance * rightward;
+
+}
+
+
+//method that will take a quaternion and apply it to the target.
+//Also a method that will move the above point with the camera position
+void Simplex::MyCamera::CalculateRotation(quaternion rotation)
+{
+
+	//applies the rotation to the target point
+	m_v3Target = m_v3Target * rotation;
+
+	//will keep the above x and z positions to where the camera is
+	//then sets the point above the camera 
+	m_v3Above.x = m_v3Position.x;
+	m_v3Above.y = m_v3Position.y + 2.0f;
+	m_v3Above.z = m_v3Position.z;
+
+}
