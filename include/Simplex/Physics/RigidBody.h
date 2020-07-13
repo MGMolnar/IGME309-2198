@@ -11,7 +11,7 @@ namespace Simplex
 {
 enum eSATResults
 {
-	SAT_NONE = 0,
+	SAT_NONE = 1,
 	
 	SAT_AX,
 	SAT_AY,

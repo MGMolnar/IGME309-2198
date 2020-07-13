@@ -281,130 +281,156 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
+	float projection;
+	float otherProjection;
+	
+	matrix4 rotation;
+	matrix4 absRotation;
+	
+	//Gets the rotation of the other object into this objects cordinates
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			rotation[i][j] = glm::dot(m_m4ToWorld[i], a_pOther->m_m4ToWorld[j]);
+		}
+	}
+	
+	//the three different axises on this object
+	vector3 axisX = m_m4ToWorld[0];
+	vector3 axisY = m_m4ToWorld[1];
+	vector3 axisZ = m_m4ToWorld[2];
 
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	//get the translation vector between the centers
+	//then bring it into this objects cordinates
+	vector3 translate = a_pOther->GetCenterGlobal() - GetCenterGlobal();
+	translate = vector3(glm::dot(translate, axisX), glm::dot(translate, axisY), glm::dot(translate, axisZ));
 
-	//The unsigned integer that signifies separation
-	uint separation = 1;
+	//nested for loop to go through the matrix and absolute it
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			absRotation[i][j] = glm::abs(rotation[i][j]) + 0.000001f;
+		}
+	}
+	//vectors that will contain the halfmeasurements for each object
+	//for x y and z respectively
+	std::vector<float> halfMeasurements;
+	std::vector<float> otherHalfMeasurements;
 
-	//The vectors containing the half-measurements
-	std::vector<float> halfMeasurementsA;
-	std::vector<float> halfMeasurementsB;
+	//push all the halfmeasurements to be later in use
+	halfMeasurements.push_back(m_v3HalfWidth.x);
+	halfMeasurements.push_back(m_v3HalfWidth.y);
+	halfMeasurements.push_back(m_v3HalfWidth.z);
 
-	//Half-width and center position of the other rigidbody
-	vector3 a_pCenter = a_pOther->GetCenterGlobal();
-	float a_pHalfWidth = a_pOther->m_v3HalfWidth.x;
+	//push all the halfmeasurements of the other object for later use
+	otherHalfMeasurements.push_back(a_pOther->m_v3HalfWidth.x);
+	otherHalfMeasurements.push_back(a_pOther->m_v3HalfWidth.y);
+	otherHalfMeasurements.push_back(a_pOther->m_v3HalfWidth.z);
 
-	//Finds the half-height and half-depth of the rigidbodies
-	float halfWidth = m_v3HalfWidth.x;
-	float m_v3HalfHeight = m_v3HalfWidth.y;
-	float m_v3HalfDepth = m_v3HalfWidth.z;
-	float a_pHalfHeight = a_pOther->m_v3HalfWidth.y;
-	float a_pHalfDepth = a_pOther->m_v3HalfWidth.z;
+	//Goes through and tests the axes before they are 
+	//multiplied together so this current objects x y and z axes
+	for (int i = 0; i < 3; i++)
+	{
+		projection = halfMeasurements[i];
+		otherProjection = otherHalfMeasurements[0] * absRotation[i][0]+ otherHalfMeasurements[1] 
+			* absRotation[i][1] + otherHalfMeasurements[2] * absRotation[i][2];
 
-	halfMeasurementsA.push_back(halfWidth);
-	halfMeasurementsA.push_back(m_v3HalfHeight);
-	halfMeasurementsA.push_back(m_v3HalfDepth);
-	halfMeasurementsB.push_back(a_pHalfWidth);
-	halfMeasurementsB.push_back(a_pHalfHeight);
-	halfMeasurementsB.push_back(a_pHalfDepth);
+		if (glm::abs(translate[i]) > projection + otherProjection)
+		{
+			return 0;
+		}
+	}
+	
+	//for loop to test the other objects axes before they are
+	//multiplied. Other objects x y and z are tested
+	for (int i = 0; i < 3; i++)
+	{
+		projection = halfMeasurements[0] * absRotation[0][i] + halfMeasurements[1] 
+			* absRotation[1][i] + halfMeasurements[2] * absRotation[2][i];
+		otherProjection = otherHalfMeasurements[i];
 
-	//The axes for face collision
-	vector3 xAxisA = m_m4ToWorld[0];
-	vector3 yAxisA = m_m4ToWorld[1];
-	vector3 zAxisA = m_m4ToWorld[2];
-
-	vector3 xAxisB = a_pOther->m_m4ToWorld[0];
-	vector3 yAxisB = a_pOther->m_m4ToWorld[1];
-	vector3 zAxisB = a_pOther->m_m4ToWorld[2];
-
-	//The axes for edge collision
-	vector3 xAxisABx = xAxisA * xAxisB;
-	vector3 xAxisABy = xAxisA * yAxisB;
-	vector3 xAxisABz = xAxisA * zAxisB;
-
-	vector3 yAxisABx = yAxisA * xAxisB;
-	vector3 yAxisABy = yAxisA * yAxisB;
-	vector3 yAxisABz = yAxisA * zAxisB;
-
-	vector3 zAxisABx = zAxisA * xAxisB;
-	vector3 zAxisABy = zAxisA * yAxisB;
-	vector3 zAxisABz = zAxisA * zAxisB;
-	// **The axes were computed simply for reference while coding
-
-	//Computes translation vector and brings it into coordinate frame
-	vector3 translation = a_pCenter - this->GetCenterGlobal();
-	translation = vector3(glm::dot(translation, xAxisA), glm::dot(translation, yAxisA), glm::dot(translation, zAxisA));
-
-	//Computes absolute value of rotation matrix
-	matrix4 abs_m4ToWorld;
-
-	for (int x = 0; x < 3; x++) {
-		for (int y = 0; y < 3; y++) {
-			abs_m4ToWorld[x,y] = abs(m_m4ToWorld[x, y]) + 0.000001f;
+		if (glm::abs(translate[0] * rotation[0][i] + translate[1] * rotation[1][i] + translate[2] * rotation[2][i]
+			> projection + otherProjection))
+		{
+			return 0;
 		}
 	}
 
-	//The radii of the OBB
-	float ra, rb;
-
-	//Tests axes xAxisA, yAxisA, and zAxisA
-	for (int i = 0; i < 3; i++) {
-			ra = halfMeasurementsA[i];
-			rb = halfMeasurementsB[0] * abs_m4ToWorld[i][0] + halfMeasurementsB[1] * abs_m4ToWorld[i][1] + halfMeasurementsB[2] * abs_m4ToWorld[i][2];
-			if (abs(translation[i]) > ra + rb) return separation;
+	//tests this axis x multiplied by the other x axis.
+	projection = halfMeasurements[1] * absRotation[2][0] + halfMeasurements[2] * absRotation[1][0];
+	otherProjection = otherHalfMeasurements[1] * absRotation[0][2] + otherHalfMeasurements[2] * absRotation[0][1];
+	if (glm::abs(translate[2] * rotation[1][0] - translate[1] * rotation[2][0]) > projection + otherProjection)
+	{
+		return 0;
 	}
-	//Tests axes xAxisB, yAxisB, and zAxisB
-	for (int i = 0; i < 3; i++) {
-		ra = halfMeasurementsA[0] * abs_m4ToWorld[0][i] + halfMeasurementsA[1] * abs_m4ToWorld[1][i] + halfMeasurementsA[2] * abs_m4ToWorld[2][i];
-		rb = halfMeasurementsB[i];
-		if (abs(translation[0] * m_m4ToWorld[0][i] + translation[1] * m_m4ToWorld[1][i] + translation[2] * m_m4ToWorld[2][i]) > ra + rb) return separation;
-	}
-	//Tests axis xAxisABx
-	ra = halfMeasurementsA[1] * abs_m4ToWorld[2][0] + halfMeasurementsA[2] * abs_m4ToWorld[1][0];
-	rb = halfMeasurementsB[1] * abs_m4ToWorld[0][2] + halfMeasurementsB[2] * abs_m4ToWorld[0][1];
-	if (abs(translation[2] * m_m4ToWorld[1][0] - translation[1] * m_m4ToWorld[2][0]) > ra + rb) return separation;
-	//Tests axis xAxisABy
-	ra = halfMeasurementsA[1] * abs_m4ToWorld[2][1] + halfMeasurementsA[2] * abs_m4ToWorld[1][1];
-	rb = halfMeasurementsB[0] * abs_m4ToWorld[0][2] + halfMeasurementsB[2] * abs_m4ToWorld[0][0];
-	if (abs(translation[2] * m_m4ToWorld[1][1] - translation[1] * m_m4ToWorld[2][1]) > ra + rb) return separation;
-	//Tests axis xAxisABz
-	ra = halfMeasurementsA[1] * abs_m4ToWorld[2][2] + halfMeasurementsA[2] * abs_m4ToWorld[1][2];
-	rb = halfMeasurementsB[0] * abs_m4ToWorld[0][1] + halfMeasurementsB[1] * abs_m4ToWorld[0][0];
-	if (abs(translation[2] * m_m4ToWorld[1][2] - translation[1] * m_m4ToWorld[2][2]) > ra + rb) return separation;
-	//Tests axis yAxisABx
-	ra = halfMeasurementsA[0] * abs_m4ToWorld[2][0] + halfMeasurementsA[2] * abs_m4ToWorld[0][0];
-	rb = halfMeasurementsB[1] * abs_m4ToWorld[1][2] + halfMeasurementsB[2] * abs_m4ToWorld[1][1];
-	if (abs(translation[0] * m_m4ToWorld[2][0] - translation[2] * m_m4ToWorld[0][0]) > ra + rb) return separation;
-	//Tests axis yAxisABy
-	ra = halfMeasurementsA[0] * abs_m4ToWorld[2][1] + halfMeasurementsA[2] * abs_m4ToWorld[0][1];
-	rb = halfMeasurementsB[0] * abs_m4ToWorld[1][2] + halfMeasurementsB[2] * abs_m4ToWorld[1][0];
-	if (abs(translation[0] * m_m4ToWorld[2][1] - translation[2] * m_m4ToWorld[0][1]) > ra + rb) return separation;
-	//Tests axis yAxisABz
-	ra = halfMeasurementsA[0] * abs_m4ToWorld[2][2] + halfMeasurementsA[2] * abs_m4ToWorld[0][2];
-	rb = halfMeasurementsB[0] * abs_m4ToWorld[1][1] + halfMeasurementsB[1] * abs_m4ToWorld[1][0];
-	if (abs(translation[0] * m_m4ToWorld[2][2] - translation[2] * m_m4ToWorld[0][2]) > ra + rb) return separation;
-	//Tests axis zAxisABx
-	ra = halfMeasurementsA[0] * abs_m4ToWorld[1][0] + halfMeasurementsA[1] * abs_m4ToWorld[0][0];
-	rb = halfMeasurementsB[1] * abs_m4ToWorld[2][2] + halfMeasurementsB[2] * abs_m4ToWorld[2][1];
-	if (abs(translation[1] * m_m4ToWorld[0][0] - translation[0] * m_m4ToWorld[1][0]) > ra + rb) return separation;
-	//Tests axis zAxisABy
-	ra = halfMeasurementsA[0] * abs_m4ToWorld[1][1] + halfMeasurementsA[1] * abs_m4ToWorld[0][1];
-	rb = halfMeasurementsB[0] * abs_m4ToWorld[2][2] + halfMeasurementsB[2] * abs_m4ToWorld[2][0];
-	if (abs(translation[1] * m_m4ToWorld[0][1] - translation[0] * m_m4ToWorld[1][1]) > ra + rb) return separation;
-	//Tests axis zAxisABz
-	ra = halfMeasurementsA[0] * abs_m4ToWorld[1][2] + halfMeasurementsA[1] * abs_m4ToWorld[0][2];
-	rb = halfMeasurementsB[0] * abs_m4ToWorld[2][1] + halfMeasurementsB[1] * abs_m4ToWorld[2][0];
-	if (abs(translation[1] * m_m4ToWorld[0][2] - translation[0] * m_m4ToWorld[1][2]) > ra + rb) return separation;
 
-	//there is no axis test that separates this two objects
+	//tests this x axis multiplied by the other y axis
+	projection = halfMeasurements[1] * absRotation[2][1] + halfMeasurements[2] * absRotation[1][1];
+	otherProjection = otherHalfMeasurements[0] * absRotation[0][2] + otherHalfMeasurements[2] * absRotation[0][0];
+	if (glm::abs(translate[2] * rotation[1][1] - translate[1] * rotation[2][1]) > projection + otherProjection)
+	{
+		return 0;
+	}
+
+	//tests this x axis multiplied by the other z axis
+	projection = halfMeasurements[1] * absRotation[2][2] + halfMeasurements[2] * absRotation[1][2];
+	otherProjection = otherHalfMeasurements[0] * absRotation[0][1] + otherHalfMeasurements[1] * absRotation[0][0];
+	if (glm::abs(translate[2] * rotation[1][2] - translate[1] * rotation[2][2]) > projection + otherProjection)
+	{
+		return 0;
+	}
+
+	//tests y axis multiplied against the other x axis 
+	projection = halfMeasurements[0] * absRotation[2][0] + halfMeasurements[2] * absRotation[0][0];
+	otherProjection = otherHalfMeasurements[1] * absRotation[1][2] + otherHalfMeasurements[2] * absRotation[1][1];
+	if (glm::abs(translate[0] * rotation[2][0] - translate[2] * rotation[0][0]) > projection + otherProjection)
+	{
+		return 0;
+	}
+
+	//tests the y axis multiplied against the other y axis
+	projection = halfMeasurements[0] * absRotation[2][0] + halfMeasurements[2] * absRotation[0][0];
+	otherProjection = otherHalfMeasurements[1] * absRotation[1][2] + otherHalfMeasurements[2] * absRotation[1][1];
+	if (glm::abs(translate[0] * rotation[2][0] - translate[2] * rotation[0][0]) > projection + otherProjection)
+	{
+		return 0;
+	}
+
+	//tests the y axis multiplied against the other y axis
+	projection = halfMeasurements[0] * absRotation[2][2] + halfMeasurements[2] * absRotation[0][2];
+	otherProjection = otherHalfMeasurements[0] * absRotation[1][1] + otherHalfMeasurements[1] * absRotation[1][0];
+	if (glm::abs(translate[0] * rotation[2][2] - translate[2] * rotation[0][2]) > projection + otherProjection)
+	{
+		return 0;
+	}
+
+	//tests the z axis multiplied against the other x axis
+	projection = halfMeasurements[0] * absRotation[1][0] + halfMeasurements[1] * absRotation[0][0];
+	otherProjection = otherHalfMeasurements[1] * absRotation[2][2] + otherHalfMeasurements[2] * absRotation[2][1];
+	if (glm::abs(translate[1] * rotation[0][0] - translate[0] * rotation[1][0]) > projection + otherProjection)
+	{
+		return 0;
+	}
+
+	//tests the z axis multiplied against the other y axis
+	projection = halfMeasurements[0] * absRotation[1][1] + halfMeasurements[1] * absRotation[0][1];
+	otherProjection = otherHalfMeasurements[0] * absRotation[2][2] + otherHalfMeasurements[2] * absRotation[2][0];
+	if (glm::abs(translate[1] * rotation[0][1] - translate[0] * rotation[1][1]) > projection + otherProjection)
+	{
+		return 0;
+	}
+	
+	//tests the z axis multiplied against the other z axis
+	projection = halfMeasurements[0] * absRotation[1][2] + halfMeasurements[1] * absRotation[0][2];
+	otherProjection = otherHalfMeasurements[0] * absRotation[2][1] + otherHalfMeasurements[1] * absRotation[2][0];
+	if (glm::abs(translate[1] * rotation[0][2] - translate[0] * rotation[1][2]) > projection + otherProjection)
+	{
+		return 0;
+	}
+
+	//since no axes are touching return none
 	return eSATResults::SAT_NONE;
+
 }
