@@ -23,7 +23,7 @@ class Application
 
 	Octree* m_pRoot;
 
-	uint m_uOctantID = -1; //Index of Octant to display
+	int m_uOctantID = 0; //Index of Octant to display
 	uint m_uObjects = 0; //Number of objects in the scene
 	uint m_uOctantLevels = 0; //Number of levels in the octree
 private:
@@ -63,6 +63,8 @@ private:
 	sf::SoundBuffer m_soundBuffer; //buffer to play sound from
 	sf::Sound m_sound; //sound effect
 	sf::Music m_soundBGM; //background music
+
+	Octree* octree = nullptr;
 
 public:
 #pragma region Constructor / Run / Destructor

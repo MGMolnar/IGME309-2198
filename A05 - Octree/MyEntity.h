@@ -187,8 +187,8 @@ private:
 	void Init(void);
 };//class
 
-  //EXPIMP_TEMPLATE template class SimplexDLL std::vector<MyEntity>;
-EXPIMP_TEMPLATE template class SimplexDLL std::vector<MyEntity*>;
+	//EXPIMP_TEMPLATE template class SimplexDLL std::vector<MyEntity>;
+	//EXPIMP_TEMPLATE template class SimplexDLL std::vector<MyEntity*>;
 
 } //namespace Simplex
 

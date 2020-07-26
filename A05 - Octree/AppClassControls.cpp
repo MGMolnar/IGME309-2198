@@ -113,27 +113,30 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		break;
 	case sf::Keyboard::PageUp:
 		++m_uOctantID;
-		/*
-		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+
+		if (m_uOctantID >= octree->GetOctantCount())
+		{
+			m_uOctantID = 0;
+		}
+
+		octree->Display(m_uOctantID);
 		break;
 	case sf::Keyboard::PageDown:
 		--m_uOctantID;
-		/*
-		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+
+		if (m_uOctantID < 0)
+		{
+			m_uOctantID = octree->GetOctantCount();
+		}
+
+		octree->Display(m_uOctantID);
 		break;
 	case sf::Keyboard::Add:
 		if (m_uOctantLevels < 4)
 		{
 			m_pEntityMngr->ClearDimensionSetAll();
 			++m_uOctantLevels;
-			/*
-			SafeDelete(m_pRoot);
-			m_pRoot = new MyOctant(m_uOctantLevels, 5);
-			*/
+			octree->AddDimension();
 		}
 		break;
 	case sf::Keyboard::Subtract:
@@ -141,10 +144,7 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		{
 			m_pEntityMngr->ClearDimensionSetAll();
 			--m_uOctantLevels;
-			/*
-			SafeDelete(m_pRoot);
-			m_pRoot = new MyOctant(m_uOctantLevels, 5);
-			*/
+			octree->RemoveDimension();
 		}
 		break;
 	case sf::Keyboard::LShift:

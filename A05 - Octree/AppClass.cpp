@@ -30,8 +30,10 @@ void Application::InitVariables(void)
 		}
 	}
 
-	m_uOctantLevels = 1;
-	//m_pRoot = new Octree(m_uOctantLevels, 5);
+	m_uOctantLevels = 0;
+	octree = new Octree(m_uOctantLevels, 0, 38.0f, m_pEntityMngr);
+	octree->ConfigureOctree();
+
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
@@ -46,7 +48,9 @@ void Application::Update(void)
 	CameraRotation();
 	
 	//Update Entity Manager
-	m_pEntityMngr->Update();
+	//m_pEntityMngr->Update();
+
+	octree->CheckCollision();
 
 	//Add objects to render list
 	m_pEntityMngr->AddEntityToRenderList(-1, true);
@@ -68,6 +72,8 @@ void Application::Display(void)
 
 	//clear the render list
 	m_pMeshMngr->ClearRenderList();
+
+	octree->Display(m_uOctantID);
 	
 	//draw gui,
 	DrawGUI();
