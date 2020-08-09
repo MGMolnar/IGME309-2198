@@ -119,6 +119,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NoCredit", "NoCredit", "{D5
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EO5", "E05 - Transformations\EO5.vcxproj", "{FCCBAF90-E59C-4FD4-9737-6836D782C010}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Final Project", "Final Practical\Final Practical\A-Star.vcxproj", "{A3FD1B6F-618B-4E7E-93CC-265D1E19A0DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -319,6 +321,10 @@ Global
 		{FCCBAF90-E59C-4FD4-9737-6836D782C010}.Debug|x86.Build.0 = Debug|Win32
 		{FCCBAF90-E59C-4FD4-9737-6836D782C010}.Release|x86.ActiveCfg = Release|Win32
 		{FCCBAF90-E59C-4FD4-9737-6836D782C010}.Release|x86.Build.0 = Release|Win32
+		{A3FD1B6F-618B-4E7E-93CC-265D1E19A0DC}.Debug|x86.ActiveCfg = Debug|Win32
+		{A3FD1B6F-618B-4E7E-93CC-265D1E19A0DC}.Debug|x86.Build.0 = Debug|Win32
+		{A3FD1B6F-618B-4E7E-93CC-265D1E19A0DC}.Release|x86.ActiveCfg = Release|Win32
+		{A3FD1B6F-618B-4E7E-93CC-265D1E19A0DC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -373,6 +379,7 @@ Global
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 		{D5DAFB74-E258-400F-9C89-B30FBD88CFA9} = {EE0E027C-366F-4685-94D5-0EA5F6870B1B}
 		{FCCBAF90-E59C-4FD4-9737-6836D782C010} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
+		{A3FD1B6F-618B-4E7E-93CC-265D1E19A0DC} = {EE0E027C-366F-4685-94D5-0EA5F6870B1B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36545A6-DAAA-4856-BDB7-57C29F88BC6B}

@@ -1,0 +1,9 @@
+Controls:
+Press arrows to move Steve
+
+Collision Detection / Resolution: NONE
+Spatial Optimization: NONE
+Extra things I added: NONE
+
+Note from Alberto: This is an example of AStar alone, when Morgan allowed me to use this project as a 
+class example, no other requirements existed.
